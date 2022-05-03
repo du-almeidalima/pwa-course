@@ -1,0 +1,72 @@
+{
+  // For more details: https://web.dev/add-manifest/#manifest-properties
+  // https://developer.mozilla.org/en-US/docs/Web/Manifest
+
+  // Used when the application is installed and on certain places, like, Splashcreen
+  "name": "Instagram lookalike as Progressive Web App",
+  // Will be used bellow the home screen icon when installed and prepended into the title of an page
+  "short_name": "PWA Gram",
+  // Which page to load on startup when tapping the icon on home screen. This is not evaluated when opening
+  // in a specific URL.
+  "start_url": "./index.html",
+  // Which pages are included in "PWA Experience". "." means all pages.
+  // One could specify a folder and then, this file configurations, such as the icon, would only be
+  // applied to the pages inside of it.
+  "scope": ".",
+  // How it should look. Standalone give a app look like experience, without browser controls.
+  // https://web.dev/add-manifest/#display
+  // Valid values: fullscreen | standalone | minimal-ui | browser
+  "display": "standalone",
+  // The background_color property is used on the splash screen when the application is first launched on mobile.
+  "background_color": "#fff",
+  // Styles for some native device elements, such as the toolbar.
+  "theme_color": "#3F51B5",
+  // The description property describes the purpose of your app. E.g. used when you save it in your favorite in the
+  // Browser.
+  "description": "A simple Instagram clone, implementing a lot of PWA love!",
+  "direction": "ltr",
+  "lang": "en-US",
+  // Set (and enforce) default orientation
+  "orientation": "portrait-primary",
+  // Configure a set of icons where the browser will chose the best fitted one (e.g. to be shown on home screen, splash screen).
+  // Similar to resolution switching
+  "icons": [
+    {
+      "src": "./src/images/icons/app-icon-48x48.png",
+      "type": "image/png",
+      "sizes": "48x48",
+      // https://web.dev/add-manifest/#icons
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./src/images/icons/app-icon-96x96.png",
+      "type": "image/png",
+      "sizes": "96x96"
+    },
+    {
+      "src": "./src/images/icons/app-icon-144x144.png",
+      "type": "image/png",
+      "sizes": "144x144"
+    },
+    {
+      "src": "./src/images/icons/app-icon-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "./src/images/icons/app-icon-256x256.png",
+      "type": "image/png",
+      "sizes": "256x256"
+    },
+    {
+      "src": "./src/images/icons/app-icon-384x384.png",
+      "type": "image/png",
+      "sizes": "384x384"
+    },
+    {
+      "src": "./src/images/icons/app-icon-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}
