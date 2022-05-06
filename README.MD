@@ -32,3 +32,12 @@ While in a background process, Service Workers can listen and respond to events.
 Some of them are:
 
 ![Service Workers Events](./readme/services-workers-events.png)
+
+### Caching
+
+One great concept to know what to cache is to identifying dynamic versus static data. For example, the app shell 
+(header, footer, main content...) doesn't change very often, so it's a great candidate to be cached.
+
+A great time cache those asses is during the installation phase.
+
+![Installation Caching](./readme/installation-caching.png)
