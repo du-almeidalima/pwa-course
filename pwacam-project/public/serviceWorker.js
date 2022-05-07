@@ -1,6 +1,7 @@
 import { loggerFactory } from "./src/utils/logger.js";
 
-const CACHE_NAME = "pwagram-static-cache";
+const STATIC_CACHE_NAME = "pwagram-static-cache";
+const DYNAMIC_CACHE_NAME = "pwagram-dynamic-cache";
 
 const logger = loggerFactory("Service Worker");
 
@@ -13,7 +14,7 @@ self.addEventListener("install", (e) => {
   // access the cache before it's completely opened. So, we can use the "waitUntil" to hold the installation phase
   // until the given promise (caches.open) is finished.
   e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
+    caches.open(STATIC_CACHE_NAME).then((cache) => {
       logger(`Precaching App Shell`);
       // This will make a request to this file, download a store it into the Cache.
       // It's noteworthy that, when the browser tries to load this script via the <script> tag, it will make this same
@@ -26,15 +27,15 @@ self.addEventListener("install", (e) => {
       cache.add("/");
       // Adding assets in bulk
       cache.addAll([
-        '/src/js/feed.mjs',
-        '/src/js/material.min.js',
-        '/src/css/app.css',
-        '/src/css/feed.css',
-        '/src/images/main-image.jpg',
-        'https://cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.3.0/material.indigo-pink.min.css',
-        'https://fonts.googleapis.com/css?family=Roboto:400,700',
-        'https://fonts.googleapis.com/icon?family=Material+Icons',
-      ])
+        "/src/js/feed.mjs",
+        "/src/js/material.min.js",
+        "/src/css/app.css",
+        "/src/css/feed.css",
+        "/src/images/main-image.jpg",
+        "https://cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.3.0/material.indigo-pink.min.css",
+        "https://fonts.googleapis.com/css?family=Roboto:400,700",
+        "https://fonts.googleapis.com/icon?family=Material+Icons",
+      ]);
     })
   );
 });
@@ -61,7 +62,18 @@ self.addEventListener("fetch", (e) => {
         return response;
       }
 
-      return fetch(e.request);
+      return fetch(e.request).then((res) => {
+        return caches.open(DYNAMIC_CACHE_NAME).then((cache) => {
+          // .put() will not perform the request and cache it, like .add()
+          // Instead, it expects you to provide the url and response. This is useful when
+          // The request is already made and we just want to cache it.
+          cache.put(e.request.url, res.clone());
+          // A Response can only be consumed once, that's why it's needed to clone it.
+          // https://developer.mozilla.org/en-US/docs/Web/API/Response/clone
+
+          return res;
+        });
+      });
     })
   );
 });
