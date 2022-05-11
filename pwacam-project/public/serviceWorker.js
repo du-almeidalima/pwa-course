@@ -1,6 +1,8 @@
 import { loggerFactory } from "./src/utils/logger.js";
 
-const STATIC_CACHE_NAME = "pwagram-static-cache";
+const VERSION = "v1";
+const STATIC_CACHE_PREFIX = "pwagram-static-cache";
+const STATIC_CACHE_NAME = STATIC_CACHE_PREFIX + VERSION;
 const DYNAMIC_CACHE_NAME = "pwagram-dynamic-cache";
 
 const logger = loggerFactory("Service Worker");
@@ -42,7 +44,23 @@ self.addEventListener("install", (e) => {
 
 self.addEventListener("activate", (e) => {
   logger(`Activating Service Worker ...`, e);
+  // A good place to clean old Caches is when the service has been activated
+  // This won't break a running application because this step is only triggered when the
+  // user closes the all tabs.
+  e.waitUntil(
+    caches.keys().then((keyListRes) => {
+      const deletedEntriesPromises = keyListRes
+        .filter(
+          (key) => key !== STATIC_CACHE_NAME && key !== DYNAMIC_CACHE_NAME
+        )
+        .map((key) => {
+          logger("Removing old cache entry: ", key);
+          caches.delete(key);
+        });
 
+      return Promise.all(deletedEntriesPromises);
+    })
+  );
   // Pages loaded before this service worker was registered will not be controlled by it. This claims the control over
   // those pages.
   return self.clients.claim();
@@ -56,7 +74,8 @@ self.addEventListener("fetch", (e) => {
 
   // Returning request/response from CacheAPI
   e.respondWith(
-    // CacheAPI uses the request as the key
+    // CacheAPI uses the request as the key.
+    // Matches also looks in ALL caches
     caches.match(e.request).then((response) => {
       if (response) {
         return response;
