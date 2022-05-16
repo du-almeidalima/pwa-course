@@ -72,27 +72,28 @@ self.addEventListener("fetch", (e) => {
   // Overriding what the request response will be!
   // e.respondWith(fetch(e.request));
 
-  // Returning request/response from CacheAPI
-  e.respondWith(
+  const handleFetch = async () => {
     // CacheAPI uses the request as the key.
     // Matches also looks in ALL caches
-    caches.match(e.request).then((response) => {
-      if (response) {
-        return response;
-      }
+    const cacheRes = await caches.match(e.request);
+    if (cacheRes) {
+      // Returning request/response from CacheAPI
+      return cacheRes;
+    }
 
-      return fetch(e.request).then((res) => {
-        return caches.open(DYNAMIC_CACHE_NAME).then((cache) => {
-          // .put() will not perform the request and cache it, like .add()
-          // Instead, it expects you to provide the url and response. This is useful when
-          // The request is already made and we just want to cache it.
-          cache.put(e.request.url, res.clone());
-          // A Response can only be consumed once, that's why it's needed to clone it.
-          // https://developer.mozilla.org/en-US/docs/Web/API/Response/clone
+    const fetchRes = await fetch(e.request);
+    const cache = await caches.open(DYNAMIC_CACHE_NAME);
 
-          return res;
-        });
-      });
-    })
-  );
+    // .put() will not perform the request and cache it, like .add()
+    // Instead, it expects you to provide the url and response. This is useful when
+    // The request is already made and we just want to cache it.
+    cache.put(e.request.url, fetchRes.clone());
+    // A Response can only be consumed once, that's why it's needed to clone it.
+    // https://developer.mozilla.org/en-US/docs/Web/API/Response/clone
+
+    return fetchRes;
+  };
+
+  // Calling handleFetch because respondWith expects a promise, not a callback.
+  e.respondWith(handleFetch());
 });
