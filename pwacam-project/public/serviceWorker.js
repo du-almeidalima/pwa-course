@@ -30,6 +30,8 @@ self.addEventListener("install", (e) => {
       cache.add("/");
       // Adding assets in bulk
       cache.addAll([
+        "/offline",
+        "/offline/index.html",
         "/src/js/feed.mjs",
         "/src/js/material.min.js",
         "/src/css/app.css",
@@ -82,17 +84,27 @@ self.addEventListener("fetch", (e) => {
       return cacheRes;
     }
 
-    const fetchRes = await fetch(e.request);
-    const cache = await caches.open(DYNAMIC_CACHE_NAME);
+    // If a request is made offline and the user doesn't have the resources cached
+    // this will throw an exception. We can use this to serve a offline page.
+    try {
+      const fetchRes = await fetch(e.request);
+      const cache = await caches.open(DYNAMIC_CACHE_NAME);
 
-    // .put() will not perform the request and cache it, like .add()
-    // Instead, it expects you to provide the url and response. This is useful when
-    // The request is already made and we just want to cache it.
-    cache.put(e.request.url, fetchRes.clone());
-    // A Response can only be consumed once, that's why it's needed to clone it.
-    // https://developer.mozilla.org/en-US/docs/Web/API/Response/clone
+      // .put() will not perform the request and cache it, like .add()
+      // Instead, it expects you to provide the url and response. This is useful when
+      // The request is already made and we just want to cache it.
+      cache.put(e.request.url, fetchRes.clone());
+      // A Response can only be consumed once, that's why it's needed to clone it.
+      // https://developer.mozilla.org/en-US/docs/Web/API/Response/clone
 
-    return fetchRes;
+      return fetchRes;
+    } catch (error) {
+      // This approach of handling the offline / network error has a pitfall on which
+      // for any error it will return the offline page, regardless of it being a json/css/js requests.
+      // FIXME: Differentiate types of request and only return offline page for routes/document/html requests.
+      const cache = await caches.open(STATIC_CACHE_NAME);
+      return await cache.match("/offline/index.html");
+    }
   };
 
   // Calling handleFetch because respondWith expects a promise, not a callback.
