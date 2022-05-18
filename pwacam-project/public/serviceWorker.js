@@ -1,9 +1,10 @@
-import { loggerFactory } from "./src/utils/logger.js";
+"use strict";
 
-const VERSION = "v1";
-const STATIC_CACHE_PREFIX = "pwagram-static-cache";
-const STATIC_CACHE_NAME = STATIC_CACHE_PREFIX + VERSION;
-const DYNAMIC_CACHE_NAME = "pwagram-dynamic-cache";
+import { loggerFactory } from "./src/utils/logger.js";
+import {
+  DYNAMIC_CACHE_NAME,
+  STATIC_CACHE_NAME,
+} from "./src/js/constants/cache-keys.mjs";
 
 const logger = loggerFactory("Service Worker");
 
