@@ -107,3 +107,7 @@ And, if there's no cache, the network request will return the asset.
 - **CONS**: Complicated since the UI/Controller/Component needs to dispatch two requests, one for the cache and the other for the Network.
 
 ![Cache with Network Fallback](./readme/cache-strategy-cache-then-network.png)
+
+> Those strategies don't necessarily need to be used isolated. For example, one could use the **Cache Only** for
+> static assets (app shell) and **Cache then Network** for a specific domain or any other rule (a Header maybe?)
+> This allows to mitigate the const of each for a specific scenario.

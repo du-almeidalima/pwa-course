@@ -4,7 +4,9 @@ import { loggerFactory } from "./src/utils/logger.mjs";
 import {
   DYNAMIC_CACHE_NAME,
   STATIC_CACHE_NAME,
+  BASE_API
 } from "./src/js/constants/cache-keys.mjs";
+// import { BASE_API } from "./src/js/app.mjs";
 
 const logger = loggerFactory("Service Worker");
 
@@ -69,18 +71,40 @@ self.addEventListener("activate", (e) => {
   return self.clients.claim();
 });
 
-
 // This strategy assumes that the caller of Fetch already got a cached version of the resource
 // requested.
 self.addEventListener("fetch", (e) => {
+  const requestAndCache = async (request) => {
+    const response = await fetch(request);
+    const dynamicCache = await caches.open(DYNAMIC_CACHE_NAME);
+
+    dynamicCache.put(request.url, response.clone());
+    return response;
+  }
 
   const handleFetch = async () => {
-    const fetchRes = await fetch(e.request);
-    const cache = await caches.open(DYNAMIC_CACHE_NAME);
+    // Always perform networking requests for the domain BASE_API(https://httpbin.org)
+    if (e.request.url.indexOf(BASE_API) > -1) {
+      return await requestAndCache(e.request);
+    }
 
-    cache.put(e.request.url, fetchRes.clone());
+    // For requests that are not from BASE_API, tries to return cached first
+    const cachedRequest = await caches.match(e.request);
 
-    return fetchRes;
+    if (cachedRequest) {
+      return cachedRequest
+    }
+
+    // If it fails, just try to perform the request and save it to the cache
+    try {
+      return await requestAndCache(e.request);
+    } catch (error) {
+      logger(`Error while performing request for ${e.request.url}`)
+      // It's also possible to specify which pages or resources we could return an error page
+      if (e.request.url.includes('help')) {
+        return await caches.match("/offline/index.html");
+      }
+    }
   };
 
   // Calling handleFetch because respondWith expects a promise, not a callback.

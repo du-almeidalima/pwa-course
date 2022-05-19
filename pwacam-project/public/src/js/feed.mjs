@@ -3,12 +3,13 @@
 import { createCard } from "./components/card.mjs";
 import { setCreatPostButtonListeners } from "./components/create-post-button.mjs";
 import { loggerFactory } from "../utils/logger.mjs";
+import { BASE_API } from "./constants/cache-keys.mjs";
 
 const logger = loggerFactory("Feed");
 const sharedMomentsArea = document.querySelector("#shared-moments");
 
 const getCard = async () => {
-  const URL = "https://httpbin.org/get";
+  const URL = `${BASE_API}/get`;
   const card = createCard();
 
   let networkRequest;
