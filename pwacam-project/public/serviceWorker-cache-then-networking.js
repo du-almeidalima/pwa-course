@@ -82,14 +82,16 @@ self.addEventListener("fetch", (e) => {
     return response;
   }
 
-  const handleFetch = async () => {
+  const handleFetch = async (request) => {
+    const url = new URL(request.url)
+
     // Always perform networking requests for the domain BASE_API(https://httpbin.org)
-    if (e.request.url.indexOf(BASE_API) > -1) {
-      return await requestAndCache(e.request);
+    if (url.hostname.includes(BASE_API)) {
+      return await requestAndCache(request);
     }
 
     // For requests that are not from BASE_API, tries to return cached first
-    const cachedRequest = await caches.match(e.request);
+    const cachedRequest = await caches.match(request);
 
     if (cachedRequest) {
       return cachedRequest
@@ -97,16 +99,16 @@ self.addEventListener("fetch", (e) => {
 
     // If it fails, just try to perform the request and save it to the cache
     try {
-      return await requestAndCache(e.request);
+      return await requestAndCache(request);
     } catch (error) {
-      logger(`Error while performing request for ${e.request.url}`)
+      logger(`Error while performing request for ${url.href}`)
       // It's also possible to specify which pages or resources we could return an error page
-      if (e.request.url.includes('help')) {
+      if (url.pathname.includes('/help')) {
         return await caches.match("/offline/index.html");
       }
     }
   };
 
   // Calling handleFetch because respondWith expects a promise, not a callback.
-  e.respondWith(handleFetch());
+  e.respondWith(handleFetch(e.request));
 });

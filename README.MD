@@ -110,4 +110,8 @@ And, if there's no cache, the network request will return the asset.
 
 > Those strategies don't necessarily need to be used isolated. For example, one could use the **Cache Only** for
 > static assets (app shell) and **Cache then Network** for a specific domain or any other rule (a Header maybe?)
-> This allows to mitigate the const of each for a specific scenario.
+> This allows to mitigate the drawbacks of each for a specific scenario.
+
+## Links
+
+- [Google Caching Strategies Article](https://developer.chrome.com/docs/workbox/caching-strategies-overview)
