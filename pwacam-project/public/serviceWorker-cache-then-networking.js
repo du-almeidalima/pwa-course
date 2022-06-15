@@ -6,7 +6,6 @@ import {
   STATIC_CACHE_NAME,
   BASE_API
 } from "./src/js/constants/cache-keys.mjs";
-// import { BASE_API } from "./src/js/app.mjs";
 
 const logger = loggerFactory("Service Worker");
 
@@ -103,7 +102,7 @@ self.addEventListener("fetch", (e) => {
     } catch (error) {
       logger(`Error while performing request for ${url.href}`)
       // It's also possible to specify which pages or resources we could return an error page
-      if (url.pathname.includes('/help')) {
+      if (request.headers.get('Accept').includes('text/html')) {
         return await caches.match("/offline/index.html");
       }
     }

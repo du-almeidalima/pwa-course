@@ -32,7 +32,7 @@ function closeCreatePostModal() {
   createPostArea.style.display = 'none';
 }
 
-export const setCreatPostButtonListeners = () => {
+export const setCreatePostButtonListeners = () => {
   shareImageButton.addEventListener('click', openCreatePostModal);
   closeCreatePostModalButton.addEventListener('click', closeCreatePostModal);
 }

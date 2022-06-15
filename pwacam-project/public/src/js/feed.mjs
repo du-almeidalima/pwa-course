@@ -1,7 +1,7 @@
 "use strict";
 
 import { createCard } from "./components/card.mjs";
-import { setCreatPostButtonListeners } from "./components/create-post-button.mjs";
+import { setCreatePostButtonListeners } from "./components/create-post-button.mjs";
 import { loggerFactory } from "../utils/logger.mjs";
 import { BASE_API } from "./constants/cache-keys.mjs";
 
@@ -38,4 +38,4 @@ getCard().then((card) => {
   sharedMomentsArea.appendChild(card);
 });
 
-setCreatPostButtonListeners();
+setCreatePostButtonListeners();
