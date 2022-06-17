@@ -3,5 +3,9 @@
 }
 
 .drawer-option {
+  display: flex;
+  flex-flow: column;
+  gap: 1rem;
+
   padding: 16px;
 }

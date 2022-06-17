@@ -1,9 +1,14 @@
+import "../js/components/unregister-service-worker-btn.mjs";
+
 let deferredPrompt;
 
 // Checking if the browser supports service workers
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker
-    .register("../serviceWorker-cache-then-networking.js", { scope: "/", type: "module" })
+    .register("../serviceWorker-cache-then-networking.js", {
+      scope: "/",
+      type: "module",
+    })
     .then(() => {
       console.log("[App] Service Worker is registered!");
     });
