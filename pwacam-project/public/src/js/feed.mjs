@@ -9,12 +9,13 @@ const logger = loggerFactory("Feed");
 const sharedMomentsArea = document.querySelector("#shared-moments");
 
 const getCard = async () => {
-  const URL = `${BASE_API}/get`;
+  const URL = `${BASE_API}/post`;
   const card = createCard();
 
   let networkRequest;
 
-  // Dispatch Cache and Networking requests simultaneously
+  // Dispatch Cache and Networking requests simultaneously.
+  // First, use Cache response and then the network response
   if ("caches" in window) {
     caches.match(URL).then((cacheRes) => {
       if (!networkRequest) {

@@ -1,13 +1,25 @@
 {
-	"version": "2.0.0",
-	"tasks": [
-		{
-			"type": "npm",
-			"script": "start",
-			"path": "pwacam-project/",
-			"problemMatcher": [],
-			"label": "npm: start - pwacam-project",
-			"detail": "http-server -c-1"
-		}
-	]
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "npm",
+      "script": "start",
+      "path": "pwacam-project",
+      "problemMatcher": {
+        "pattern": "$tsc",
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": {
+            "regexp": "(.*?)"
+          },
+          "endsPattern": {
+            "regexp": "Available on"
+          }
+        }
+      },
+      "label": "npm: start - pwacam-project",
+      "detail": "http-server -c-1",
+      "isBackground": true
+    }
+  ]
 }

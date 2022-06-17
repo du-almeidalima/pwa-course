@@ -4,10 +4,26 @@ import { loggerFactory } from "./src/utils/logger.mjs";
 import {
   DYNAMIC_CACHE_NAME,
   STATIC_CACHE_NAME,
-  BASE_API
+  BASE_API,
 } from "./src/js/constants/cache-keys.mjs";
 
 const logger = loggerFactory("Service Worker");
+
+/**
+ * Cache clean up utility function.
+ * @param {string} cacheName
+ * @param {number} maxEntries Max amount of entries for a given cache
+ */
+const trimCache = async (cacheName, maxEntries) => {
+  const cache = await caches.open(cacheName);
+  const cacheKeys = await cache.keys();
+  if (cacheKeys.length > maxEntries) {
+    logger(`Trimming Cache: ${cacheName}`);
+    cache.delete(cacheKeys[0]);
+
+    return trimCache(cacheName, maxEntries)
+  }
+};
 
 // Instead of "this" to refer to the Service Worker
 // Remembering that the Service Worker runs on a separate thread and don't have access to the DOM
@@ -48,7 +64,7 @@ self.addEventListener("install", (e) => {
 
 self.addEventListener("activate", (e) => {
   logger(`Activating Service Worker ...`, e);
-  // A good place to clean old Caches is when the service has been activated
+  // A good place to clean old Caches versions is when the service has been activated
   // This won't break a running application because this step is only triggered when the
   // user closes the all tabs.
   e.waitUntil(
@@ -62,7 +78,10 @@ self.addEventListener("activate", (e) => {
           caches.delete(key);
         });
 
-      return Promise.all(deletedEntriesPromises);
+      // Trimming dynamic cache (Note it only fires when an service worker is Activated (a new version is released))
+      const trimPromise = trimCache(DYNAMIC_CACHE_NAME, 3);
+
+      return Promise.all([deletedEntriesPromises, trimPromise]);
     })
   );
   // Pages loaded before this service worker was registered will not be controlled by it. This claims the control over
@@ -70,8 +89,6 @@ self.addEventListener("activate", (e) => {
   return self.clients.claim();
 });
 
-// This strategy assumes that the caller of Fetch already got a cached version of the resource
-// requested.
 self.addEventListener("fetch", (e) => {
   const requestAndCache = async (request) => {
     const response = await fetch(request);
@@ -79,7 +96,7 @@ self.addEventListener("fetch", (e) => {
 
     dynamicCache.put(request.url, response.clone());
     return response;
-  }
+  };
 
   const handleFetch = async (request) => {
     const url = new URL(request.url)
@@ -93,7 +110,7 @@ self.addEventListener("fetch", (e) => {
     const cachedRequest = await caches.match(request);
 
     if (cachedRequest) {
-      return cachedRequest
+      return cachedRequest;
     }
 
     // If it fails, just try to perform the request and save it to the cache
