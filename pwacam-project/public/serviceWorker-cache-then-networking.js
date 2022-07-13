@@ -4,8 +4,9 @@ import { loggerFactory } from "./src/utils/logger.mjs";
 import {
   DYNAMIC_CACHE_NAME,
   STATIC_CACHE_NAME,
-  BASE_API,
-} from "./src/js/constants/cache-keys.mjs";
+  
+} from "./src/js/constants/cache-keys.constants.mjs";
+import {BASE_API} from "./src/js/constants/api.constants.mjs";
 
 const logger = loggerFactory("Service Worker");
 
@@ -19,7 +20,7 @@ const trimCache = async (cacheName, maxEntries) => {
   const cacheKeys = await cache.keys();
   if (cacheKeys.length > maxEntries) {
     logger(`Trimming Cache: ${cacheName}`);
-    cache.delete(cacheKeys[0]);
+    await cache.delete(cacheKeys[0]);
 
     return trimCache(cacheName, maxEntries)
   }
@@ -78,7 +79,7 @@ self.addEventListener("activate", (e) => {
           caches.delete(key);
         });
 
-      // Trimming dynamic cache (Note it only fires when an service worker is Activated (a new version is released))
+      // Trimming dynamic cache (Note it only fires when a service worker is Activated (a new version is released))
       const trimPromise = trimCache(DYNAMIC_CACHE_NAME, 3);
 
       return Promise.all([deletedEntriesPromises, trimPromise]);

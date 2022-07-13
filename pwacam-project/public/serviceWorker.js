@@ -4,7 +4,7 @@ import { loggerFactory } from "./src/utils/logger.mjs";
 import {
   DYNAMIC_CACHE_NAME,
   STATIC_CACHE_NAME,
-} from "./src/js/constants/cache-keys.mjs";
+} from "./src/js/constants/cache-keys.constants.mjs";
 
 const logger = loggerFactory("Service Worker");
 

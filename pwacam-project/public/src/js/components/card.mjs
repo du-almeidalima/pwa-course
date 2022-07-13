@@ -1,6 +1,6 @@
 "use strict";
 
-import { USER_CACHE_KEY } from "../constants/cache-keys.mjs";
+import { USER_CACHE_KEY } from "../constants/cache-keys.constants.mjs";
 
 const clickHandler = async () => {
   // Programmatically adding requests to cache. Remember that add and addAll also performs the request
@@ -10,13 +10,13 @@ const clickHandler = async () => {
   cache.addAll(["https://httpbin.org/get", "/src/images/sf-boat.jpg"]);
 };
 
-export const createCard = () => {
+export const createCard = (title, location, imgUrl) => {
   const cardWrapper = document.createElement("div");
   cardWrapper.className = "shared-moment-card mdl-card mdl-shadow--2dp";
 
   const cardTitle = document.createElement("div");
   cardTitle.className = "mdl-card__title";
-  cardTitle.style.backgroundImage = 'url("./src/images/sf-boat.jpg")';
+  cardTitle.style.backgroundImage = `url(${imgUrl})`;
   cardTitle.style.backgroundSize = "cover";
   cardTitle.style.height = "180px";
   cardTitle.style.color = "white";
@@ -24,12 +24,12 @@ export const createCard = () => {
 
   const cardTitleTextElement = document.createElement("h2");
   cardTitleTextElement.className = "mdl-card__title-text";
-  cardTitleTextElement.textContent = "San Francisco Trip";
+  cardTitleTextElement.textContent = title;
   cardTitle.appendChild(cardTitleTextElement);
 
   const cardSupportingText = document.createElement("div");
   cardSupportingText.className = "mdl-card__supporting-text";
-  cardSupportingText.textContent = "In San Francisco";
+  cardSupportingText.textContent = location;
   cardSupportingText.style.textAlign = "center";
   cardWrapper.appendChild(cardSupportingText);
 

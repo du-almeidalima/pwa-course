@@ -1,42 +1,45 @@
 "use strict";
 
-import { createCard } from "./components/card.mjs";
-import { setCreatePostButtonListeners } from "./components/create-post-button.mjs";
-import { loggerFactory } from "../utils/logger.mjs";
-import { BASE_API } from "./constants/cache-keys.mjs";
+import {createCard} from "./components/card.mjs";
+import {setCreatePostButtonListeners} from "./components/create-post-button.mjs";
+import {loggerFactory} from "../utils/logger.mjs";
+import {ENDPOINTS, postsApi} from "./api/posts.api.js";
 
 const logger = loggerFactory("Feed");
 const sharedMomentsArea = document.querySelector("#shared-moments");
 
-const getCard = async () => {
-  const URL = `${BASE_API}/post`;
-  const card = createCard();
+const buildCards = (posts) => {
+  for (const {title, location, image} of posts) {
+    const card = createCard(title, location, image);
+    sharedMomentsArea.appendChild(card);
+  }
+}
+
+const getCards = async () => {
 
   let networkRequest;
 
   // Dispatch Cache and Networking requests simultaneously.
   // First, use Cache response and then the network response
   if ("caches" in window) {
-    caches.match(URL).then((cacheRes) => {
+    caches.match(ENDPOINTS.GET_POSTS_URL).then((cachedPosts) => {
       if (!networkRequest) {
-        logger("Cache response", cacheRes);
+        logger("Cache response", cachedPosts);
+
+        buildCards(cachedPosts)
       }
     });
   }
 
-  fetch(URL).then(async (fetchRes) => {
-    const json = await fetchRes.json();
-    networkRequest = json;
+  postsApi.getPosts().then(posts => {
+    logger("Fetch Posts:", posts);
+    networkRequest = posts;
 
-    logger("Fetch response", json);
-  });
-
-  return card;
+    buildCards(posts)
+  })
 };
 
 // Init
-getCard().then((card) => {
-  sharedMomentsArea.appendChild(card);
-});
+getCards();
 
 setCreatePostButtonListeners();
