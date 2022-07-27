@@ -4,7 +4,7 @@ import { USER_CACHE_KEY } from "../constants/cache-keys.constants.mjs";
 
 const clickHandler = async () => {
   // Programmatically adding requests to cache. Remember that add and addAll also performs the request
-  // Also, CacheAPI works outside of a Service Worker scope.
+  // Also, CacheAPI works outside a Service Worker scope.
   // This could be used as a tool that allows the user to save something to read later and potentially offline
   const cache = await caches.open(USER_CACHE_KEY);
   cache.addAll(["https://httpbin.org/get", "/src/images/sf-boat.jpg"]);
