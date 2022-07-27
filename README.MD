@@ -112,6 +112,20 @@ And, if there's no cache, the network request will return the asset.
 > static assets (app shell) and **Cache then Network** for a specific domain or any other rule (a Header maybe?)
 > This allows to mitigate the drawbacks of each for a specific scenario.
 
+### IndexedDB
+
+Similarly to the Cache API, IndexedDB can also be used to store data.
+
+It stores data in key-value pairs. It can also be used to store cache.
+
+![IndexedDB](./readme/indexed-db.png "IndexedDB")
+
+One key advantage of it over the Cache API is that it can store data/blob/file
+and noy only Network Responses as the Cache API.
+
+IndexedDb is often used to cache Dynamic Content.
+
+![Dynamic Caching vs Caching Dynamic Content](./readme/dynamic-caching-vs-caching-dynamic-content.png "Dynamic Caching vs Caching Dynamic Content")
 ## Links
 
 - [Google Caching Strategies Article](https://developer.chrome.com/docs/workbox/caching-strategies-overview)
