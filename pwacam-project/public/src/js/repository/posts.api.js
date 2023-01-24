@@ -17,9 +17,7 @@ const parseResponse = async (fetchPromise) => {
 const getPost = async (postId) => await parseResponse(fetch(`${URL}/${postId}.json`))
 const getPosts = async () => {
   try {
-    const posts = await parseResponse(fetch(GET_POSTS_URL));
-    // For some reason, Firebase Realtime Database is returning null for the first item...
-    return posts.filter(p => !!p)
+    return await parseResponse(fetch(GET_POSTS_URL));
   } catch (error) {
     log('Something went wrong while getting the posts', error)
     return []

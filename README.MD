@@ -4,7 +4,7 @@ This repo contains projects and lessons from
 the [Academind by Maximilian Schwarzmüller PWA Course](https://www.udemy.com/course/progressive-web-app-pwa-the-complete-guide)
 .
 
-> **Images with the "Udemy" watermark are of ownershipt of Academind**
+> **Images with the "Udemy" watermark are of ownership of Academind**
 
 ## PWA Core Building Blocks
 
@@ -24,17 +24,17 @@ the [Academind by Maximilian Schwarzmüller PWA Course](https://www.udemy.com/co
 
 - **Media / Streams API**: Gives access to user media interfaces such as camera and microphone.
 
-![PWA Core Building Blocks](./readme/pwa-core-building-blocks.png)
+![PWA Core Building Blocks](/readme/pwa-core-building-blocks.png)
 
 ### Service Workers
 
-![Service Workers Overview](./readme/services-workers-overview.png)
+![Service Workers Overview](/readme/services-workers-overview.png)
 
 While in a background process, Service Workers can listen and respond to events. Even if the application is closed!
 
 Some of them are:
 
-![Service Workers Events](./readme/services-workers-events.png)
+![Service Workers Events](/readme/services-workers-events.png)
 
 ### Caching
 
@@ -45,7 +45,7 @@ One great concept to know what to cache is to identifying dynamic versus static 
 
 A great time cache those asses is during the installation phase.
 
-![Installation Caching](./readme/installation-caching.png)
+![Installation Caching](/readme/installation-caching.png)
 
 #### Caching Strategies
 
@@ -61,7 +61,7 @@ result will be dynamically stored in cache for future use.
 - **PROS**: Instantly load assets if they are on the cache.
 - **CONS**: Not so suitable for frequently updated resources.
 
-![Cache with Network Fallback](./readme/cache-strategy-cache-with-network-fallback.png)
+![Cache with Network Fallback](/readme/cache-strategy-cache-with-network-fallback.png)
 
 ##### Strategy: Cache Only
 
@@ -70,7 +70,7 @@ Completely ignores network and always returns pre-cached assets.
 - **PROS**: Suitable for selected assets that you always want to return via cache.
 - **CONS**: Internet connection is not used.
 
-![Cache with Network Fallback](./readme/cache-strategy-cache-only.png)
+![Cache with Network Fallback](/readme/cache-strategy-cache-only.png)
 
 ##### Strategy: Network Only
 
@@ -79,7 +79,7 @@ Basically the normal browser behavior. Service worker always dispatches the requ
 - **PROS**: Good for frequently updated resources.
 - **CONS**: Always ignores cache.
 
-![Cache with Network Fallback](./readme/cache-strategy-network-only.png)
+![Cache with Network Fallback](/readme/cache-strategy-network-only.png)
 
 ##### Strategy: Network with Cache Fallback
 
@@ -91,7 +91,7 @@ This strategy tries to dispatch a request the network but if it fails, it tries 
   Also, some requests may take a long time before failing, thus, this strategy would
   have to wait the request to fail before returning the cache.
 
-![Cache with Network Fallback](./readme/cache-strategy-network-with-cache-fallback.png)
+![Cache with Network Fallback](/readme/cache-strategy-network-with-cache-fallback.png)
 
 ##### Strategy: Cache then Network
 
@@ -106,7 +106,7 @@ And, if there's no cache, the network request will return the asset.
 - **PROS**: Allows working offline, provides the fastest response to the user and leverages Dynamic caching.
 - **CONS**: Complicated since the UI/Controller/Component needs to dispatch two requests, one for the cache and the other for the Network.
 
-![Cache with Network Fallback](./readme/cache-strategy-cache-then-network.png)
+![Cache with Network Fallback](/readme/cache-strategy-cache-then-network.png)
 
 > Those strategies don't necessarily need to be used isolated. For example, one could use the **Cache Only** for
 > static assets (app shell) and **Cache then Network** for a specific domain or any other rule (a Header maybe?)
@@ -118,14 +118,14 @@ Similarly to the Cache API, IndexedDB can also be used to store data.
 
 It stores data in key-value pairs. It can also be used to store cache.
 
-![IndexedDB](./readme/indexed-db.png "IndexedDB")
+![IndexedDB](/readme/indexed-db.png "IndexedDB")
 
 One key advantage of it over the Cache API is that it can store data/blob/file
 and noy only Network Responses as the Cache API.
 
 IndexedDb is often used to cache Dynamic Content.
 
-![Dynamic Caching vs Caching Dynamic Content](./readme/dynamic-caching-vs-caching-dynamic-content.png "Dynamic Caching vs Caching Dynamic Content")
+![Dynamic Caching vs Caching Dynamic Content](/readme/dynamic-caching-vs-caching-dynamic-content.png "Dynamic Caching vs Caching Dynamic Content")
 ## Links
 
 - [Google Caching Strategies Article](https://developer.chrome.com/docs/workbox/caching-strategies-overview)
