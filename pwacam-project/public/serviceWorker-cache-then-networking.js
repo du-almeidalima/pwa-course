@@ -1,12 +1,12 @@
 "use strict";
 
-import { loggerFactory } from "./src/utils/logger.mjs";
+import {loggerFactory} from "./src/utils/logger.mjs";
 import {
   DYNAMIC_CACHE_NAME,
   STATIC_CACHE_NAME,
-  
 } from "./src/js/constants/cache-keys.constants.mjs";
 import {BASE_API} from "./src/js/constants/api.constants.mjs";
+import {dbPromise} from "./src/js/repository/indexdb.mjs";
 
 const logger = loggerFactory("Service Worker");
 
@@ -51,7 +51,9 @@ self.addEventListener("install", (e) => {
         "/offline",
         "/offline/index.html",
         "/src/js/feed.mjs",
-        "/src/js/material.min.js",
+        "/src/vendor/material.min.js",
+        "/src/vendor/idb.mjs",
+        "/src/js/repository/indexdb.mjs",
         "/src/css/app.css",
         "/src/css/feed.css",
         "/src/images/main-image.jpg",
@@ -91,7 +93,12 @@ self.addEventListener("activate", (e) => {
 });
 
 self.addEventListener("fetch", (e) => {
-  const requestAndCache = async (request) => {
+  // Handle chrome extensions requests
+  if (e.request.url.includes("chrome-extension")) {
+    return e.respondWith(fetch(e.request));
+  }
+
+  const requestAndStoreCache = async (request) => {
     const response = await fetch(request);
     const dynamicCache = await caches.open(DYNAMIC_CACHE_NAME);
 
@@ -99,12 +106,46 @@ self.addEventListener("fetch", (e) => {
     return response;
   };
 
+  const requestAndStoreIndexedDb = async (request) => {
+    const response = await fetch(request);
+    const clonedRes = response.clone();
+    const jsonResponse = await clonedRes.json();
+    const nonNullPosts = jsonResponse.filter((post) => !!post);
+
+    // FIXME: This resolution of the response is tailored specifically to the posts response model
+    //  this may need to be readjusted to other models
+    logger("Storing Post in IndexedDB", nonNullPosts)
+    const openedDb = await dbPromise;
+
+    for (const post of nonNullPosts) {
+      // The transaction is created with the name of the object store and the mode
+      const tx = openedDb.transaction('posts', 'readwrite')
+      const store = tx.objectStore('posts')
+      // Since the keyPath is set to "id", we don't need to specify the key
+      store.put(post);
+      
+      await tx.done;
+    }
+
+    return response;
+  };
+
+  /**
+   * Handles the fetch event with one of the following strategies:
+   * 1. If the request is from BASE_API, it will perform the request and store it in the IndexedDB
+   * 2. If the request is not from BASE_API, it will try to return the cached version first
+   * 3. If it fails, it will perform the request and store it in the cache
+   *
+   * If it fails on the last step, it will return a custom offline page.
+   * @param request
+   * @returns {Promise<Response>}
+   */
   const handleFetch = async (request) => {
     const url = new URL(request.url)
 
     // Always perform networking requests for the domain BASE_API(https://httpbin.org)
-    if (url.hostname.includes(BASE_API)) {
-      return await requestAndCache(request);
+    if (url.href.includes(BASE_API)) {
+      return await requestAndStoreIndexedDb(request);
     }
 
     // For requests that are not from BASE_API, tries to return cached first
@@ -116,7 +157,7 @@ self.addEventListener("fetch", (e) => {
 
     // If it fails, just try to perform the request and save it to the cache
     try {
-      return await requestAndCache(request);
+      return await requestAndStoreCache(request);
     } catch (error) {
       logger(`Error while performing request for ${url.href}`)
       // It's also possible to specify which pages or resources we could return an error page
