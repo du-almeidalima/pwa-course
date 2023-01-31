@@ -6,7 +6,7 @@ import {
   STATIC_CACHE_NAME,
 } from "./src/js/constants/cache-keys.constants.mjs";
 import {BASE_API} from "./src/js/constants/api.constants.mjs";
-import {dbPromise} from "./src/js/repository/indexdb.mjs";
+import {dbPromise, deletePosts, getAllPosts} from "./src/js/repository/indexdb.mjs";
 
 const logger = loggerFactory("Service Worker");
 
@@ -114,9 +114,21 @@ self.addEventListener("fetch", (e) => {
 
     // FIXME: This resolution of the response is tailored specifically to the posts response model
     //  this may need to be readjusted to other models
-    logger("Storing Post in IndexedDB", nonNullPosts)
     const openedDb = await dbPromise;
 
+    // To avoid duplicating posts, we need to clear the store before adding new ones
+    // await clearAllPosts();
+
+    // Single Post Delete
+    const dbPosts = await getAllPosts();
+
+    const deletedPosts = dbPosts.filter((dbPost) => {
+      return !nonNullPosts.some((post) => post.id === dbPost.id);
+    });
+    
+    await deletePosts(deletedPosts);
+
+    logger("Storing Post in IndexedDB", nonNullPosts)
     for (const post of nonNullPosts) {
       // The transaction is created with the name of the object store and the mode
       const tx = openedDb.transaction('posts', 'readwrite')
