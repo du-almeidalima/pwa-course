@@ -120,10 +120,11 @@ self.addEventListener("fetch", (e) => {
     for (const post of nonNullPosts) {
       // The transaction is created with the name of the object store and the mode
       const tx = openedDb.transaction('posts', 'readwrite')
+      // It's only needed to use objectStore if the transaction involves multiple stores
       const store = tx.objectStore('posts')
       // Since the keyPath is set to "id", we don't need to specify the key
       store.put(post);
-      
+
       await tx.done;
     }
 
@@ -143,20 +144,20 @@ self.addEventListener("fetch", (e) => {
   const handleFetch = async (request) => {
     const url = new URL(request.url)
 
-    // Always perform networking requests for the domain BASE_API(https://httpbin.org)
-    if (url.href.includes(BASE_API)) {
-      return await requestAndStoreIndexedDb(request);
-    }
-
-    // For requests that are not from BASE_API, tries to return cached first
-    const cachedRequest = await caches.match(request);
-
-    if (cachedRequest) {
-      return cachedRequest;
-    }
-
     // If it fails, just try to perform the request and save it to the cache
     try {
+      // Always perform networking requests for the domain BASE_API(https://httpbin.org)
+      if (url.href.includes(BASE_API)) {
+        return await requestAndStoreIndexedDb(request);
+      }
+
+      // For requests that are not from BASE_API, tries to return cached first
+      const cachedRequest = await caches.match(request);
+
+      if (cachedRequest) {
+        return cachedRequest;
+      }
+
       return await requestAndStoreCache(request);
     } catch (error) {
       logger(`Error while performing request for ${url.href}`)
